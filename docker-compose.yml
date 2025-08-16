@@ -29,12 +29,12 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: false
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      # KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-1.keystore.pkcs12
-      # KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-1_keystore_creds
-      # KAFKA_SSL_KEY_CREDENTIALS: kafka-1_sslkey_creds
-      # KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-1.truststore.jks
-      # KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
-      # KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka-truststore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka_creds
+      KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka_creds
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
     hostname: kafka
     networks:
       - confluent
