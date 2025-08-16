@@ -56,7 +56,7 @@ services:
   kafka-2:
     <<: *kafka-common
     restart: always
-    container_name: kafka-1
+    container_name: kafka-2
     ports:
       - 9094:9092
       - 9095:9093
@@ -71,7 +71,7 @@ services:
   kafka-3:
     <<: *kafka-common
     restart: always
-    container_name: kafka-1
+    container_name: kafka-3
     ports:
       - 9096:9092
       - 9097:9093
