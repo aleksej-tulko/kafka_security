@@ -46,7 +46,6 @@ services:
       - 9092:9092
       - 9093:9093
     volumes:
-      - ./kafka-1-creds:/etc/kafka/secrets
       - kafka_1:/var/lib/kafka/data
     environment:
       <<: *kafka-common-env
@@ -61,7 +60,6 @@ services:
       - 9094:9092
       - 9095:9093
     volumes:
-      - ./kafka-1-creds:/etc/kafka/secrets
       - kafka_2:/var/lib/kafka/data
     environment:
       <<: *kafka-common-env
@@ -76,7 +74,6 @@ services:
       - 9096:9092
       - 9097:9093
     volumes:
-      - ./kafka-1-creds:/etc/kafka/secrets
       - kafka_3:/var/lib/kafka/data
     environment:
       <<: *kafka-common-env
