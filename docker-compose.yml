@@ -91,6 +91,7 @@ services:
       - IPC_LOCK
     ports:
       - 8200:8200
+      - 8200:8201
     environment:
       VAULT_ADDR: "http://0.0.0.0:8200"
       VAULT_LOCAL_CONFIG: |
