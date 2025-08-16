@@ -90,15 +90,11 @@ services:
     environment:
       VAULT_ADDR: "0.0.0.0:8200"
     ports:
-      - "8200:8200"
-      - "8201:8201"
+      - 8200:8200
     restart: always
     volumes:
-      - ./logs:/vault/logs/:rw
       - ./data:/vault/data/:rw
       - ./config:/vault/config/:rw
-      - ./certs:/certs/:rw
-      - ./file:/vault/file/:rw
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
