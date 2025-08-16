@@ -86,7 +86,7 @@ services:
     
   vault:
     image: hashicorp/vault
-    container_name: vault-new
+    container_name: vault
     environment:
       VAULT_ADDR: "0.0.0.0:8200"
     ports:
