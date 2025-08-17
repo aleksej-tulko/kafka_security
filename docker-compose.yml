@@ -34,9 +34,9 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka_creds
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka_creds
       KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
-    # hostname: kafka
+    hostname: kafka
     networks:
       - confluent
   kafka-1:
@@ -53,34 +53,34 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9093
-  kafka-2:
-    <<: *kafka-common
-    restart: always
-    container_name: kafka-2
-    ports:
-      - 9095:9093
-    volumes:
-      - kafka_2:/var/lib/kafka/data
-      - ./vault/certs:/etc/kafka/secrets
-    environment:
-      <<: *kafka-common-env
-      KAFKA_BROKER_ID: 2
-      KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9095
-  kafka-3:
-    <<: *kafka-common
-    restart: always
-    container_name: kafka-3
-    ports:
-      - 9097:9093
-    volumes:
-      - kafka_3:/var/lib/kafka/data
-      - ./vault/certs:/etc/kafka/secrets
-    environment:
-      <<: *kafka-common-env
-      KAFKA_BROKER_ID: 3
-      KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9097
+  # kafka-2:
+  #   <<: *kafka-common
+  #   restart: always
+  #   container_name: kafka-2
+  #   ports:
+  #     - 9095:9093
+  #   volumes:
+  #     - kafka_2:/var/lib/kafka/data
+  #     - ./vault/certs:/etc/kafka/secrets
+  #   environment:
+  #     <<: *kafka-common-env
+  #     KAFKA_BROKER_ID: 2
+  #     KAFKA_LISTENERS: SSL://0.0.0.0:9093
+  #     KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9095
+  # kafka-3:
+  #   <<: *kafka-common
+  #   restart: always
+  #   container_name: kafka-3
+  #   ports:
+  #     - 9097:9093
+  #   volumes:
+  #     - kafka_3:/var/lib/kafka/data
+  #     - ./vault/certs:/etc/kafka/secrets
+  #   environment:
+  #     <<: *kafka-common-env
+  #     KAFKA_BROKER_ID: 3
+  #     KAFKA_LISTENERS: SSL://0.0.0.0:9093
+  #     KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9097
     
   vault:
     image: hashicorp/vault
