@@ -41,5 +41,5 @@ vault token create -role kafka-server
 ####
 vault write -field certificate kafka-int-ca/issue/kafka-server common_name=kafka.servers.kafka.acme.com alt_names=localhost format=pem_bundle > /vault/certs/kafka.pem
 apk add openssl
-openssl pkcs12 -inkey /vault/certs/kafka.pem -in /vault/certs/kafka.pem -name kafka -export -out /vault/certs/kafka.p12 -passout pass:changeit
+openssl pkcs12 -inkey /vault/certs/kafka.pem -in /vault/certs/kafka.pem -name kafka -export -out /vault/certs/kafka.p12
 sudo docker run --rm -v kafka_security_certs:/certs openjdk:17 keytool -alias kafka -importkeystore -deststorepass changeit -destkeystore /certs/kafka-keystore.jks -srckeystore /certs/kafka.p12 -srckeypass changeit -srcstorepass changeit -srcstoretype PKCS12 -noprompt
