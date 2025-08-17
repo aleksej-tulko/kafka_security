@@ -1,7 +1,7 @@
 sudo docker compose up vault -d
 sudo docker exec -it vault vault operator init -key-shares=1 -key-threshold=1 > init.txt
 cat init.txt
-export VAULT_TOKEN=hvs.qbYL39IV0Id2g5AI0a1isz1e
+####
 vault secrets enable -path root-ca pki
 vault secrets tune -max-lease-ttl=8760h root-ca
 vault write -field certificate root-ca/root/generate/internal common_name="Acme Root CA" ttl=8760h > /vault/certs/root-ca.pem
@@ -36,9 +36,9 @@ sudo docker run --rm -v kafka_security_certs:/certs openjdk:17 keytool -import -
 
 
 sudo docker exec -it vault sh
-export VAULT_TOKEN=hvs.qbYL39IV0Id2g5AI0a1isz1e
+####
 vault token create -role kafka-server
-export VAULT_TOKEN=hvs.CAESIBSMAXZY9pKKtdAA6KouBieyKAXukOs_I93Y1jU7VSFeGh4KHGh2cy5Hcm9JQnEzVndpNWIxRUg3NThWWkdGNVc
+####
 vault write -field certificate kafka-int-ca/issue/kafka-server common_name=kafka.servers.kafka.acme.com alt_names=localhost format=pem_bundle > /vault/certs/kafka.pem
 apk add openssl
 openssl pkcs12 -inkey /vault/certs/kafka.pem -in /vault/certs/kafka.pem -name kafka -export -out /vault/certs/kafka.p12 -passout pass:changeit
