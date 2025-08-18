@@ -134,7 +134,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-1:9093,kafka-2:9095,kafka-3:9097
       KAFKA_CLUSTERS_0_NAME: kraft
     networks:
-      - proxynet
+      - confluent
 
 volumes:
   zookeeper_log:
