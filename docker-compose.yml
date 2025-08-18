@@ -26,9 +26,9 @@ services:
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
       ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit
-      # ZOOKEEPER_SSL_CLIENT_AUTH: none
+      ZOOKEEPER_SSL_CLIENT_AUTH: need
   x-kafka-common:
     &kafka-common
     image: confluentinc/cp-kafka:7.4.4

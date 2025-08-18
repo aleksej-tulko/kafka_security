@@ -36,17 +36,17 @@ vault write kafka-int-ca/roles/kafka-server \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
-  server_flag=true client_flag=true \
+  server_flag=true client_flag=false \
   key_type="rsa" key_bits=2048 ttl="720h" max_ttl="720h" \
   key_usage="DigitalSignature,KeyEncipherment" \
   ext_key_usage="ServerAuth,ClientAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="ui,localhost" \
+  allowed_domains="kafka,localhost,kafka-1,kafka-2,kafka-3" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
-  server_flag=false client_flag=true \
+  server_flag=true client_flag=false \
   key_type="rsa" key_bits=2048 ttl="720h" max_ttl="720h" \
   key_usage="DigitalSignature,KeyEncipherment" \
   ext_key_usage="ClientAuth"
@@ -89,35 +89,17 @@ vault write auth/token/roles/zookeeper-server allowed_policies=kafka-server peri
 #####
 apk add --no-cache openssl jq >/dev/null
 
-vault write -format=json kafka-int-ca/issue/kafka-server \
-  common_name="localhost" \
-  alt_names="kafka,localhost,kafka-1,kafka-2,kafka-3" \
-  ip_sans="127.0.0.1" \
-  > /vault/certs/kafka.json
-
+# ---------- ZOOKEEPER ----------
 vault write -format=json kafka-int-ca/issue/zookeeper-server \
-  common_name="localhost" \
-  alt_names="localhost,zookeeper" \
+  common_name="zookeeper" \
+  alt_names="zookeeper,localhost" \
   ip_sans="127.0.0.1" \
   > /vault/certs/zookeeper.json
 
-jq -r ".data.private_key"  /vault/certs/kafka.json > /vault/certs/kafka.key
-jq -r ".data.certificate"  /vault/certs/kafka.json > /vault/certs/kafka.crt
-jq -r ".data.ca_chain[]"   /vault/certs/kafka.json > /vault/certs/ca-chain.crt
-chmod 600 /vault/certs/kafka.key
-
 jq -r ".data.private_key"  /vault/certs/zookeeper.json > /vault/certs/zookeeper.key
 jq -r ".data.certificate"  /vault/certs/zookeeper.json > /vault/certs/zookeeper.crt
+jq -r ".data.ca_chain[]"   /vault/certs/zookeeper.json > /vault/certs/ca-chain.crt
 chmod 600 /vault/certs/zookeeper.key
-
-openssl pkcs12 -export \
-  -inkey    /vault/certs/kafka.key \
-  -in       /vault/certs/kafka.crt \
-  -certfile /vault/certs/ca-chain.crt \
-  -name kafka \
-  -out /vault/certs/kafka.p12 \
-  -passout pass:changeit
-
 
 openssl pkcs12 -export \
   -inkey    /vault/certs/zookeeper.key \
@@ -127,9 +109,64 @@ openssl pkcs12 -export \
   -out /vault/certs/zookeeper.p12 \
   -passout pass:changeit
 
+# ---------- KAFKA-1 ----------
+vault write -format=json kafka-int-ca/issue/kafka-server \
+  common_name="kafka-1" \
+  alt_names="localhost" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka-1.json
+
+jq -r ".data.private_key"  /vault/certs/kafka-1.json > /vault/certs/kafka-1.key
+jq -r ".data.certificate"  /vault/certs/kafka-1.json > /vault/certs/kafka-1.crt
+chmod 600 /vault/certs/kafka-1.key
+
+openssl pkcs12 -export \
+  -inkey    /vault/certs/kafka-1.key \
+  -in       /vault/certs/kafka-1.crt \
+  -certfile /vault/certs/ca-chain.crt \
+  -name kafka-1 \
+  -out /vault/certs/kafka-1.p12 \
+  -passout pass:changeit
+
+# ---------- KAFKA-2 ----------
+vault write -format=json kafka-int-ca/issue/kafka-server \
+  common_name="kafka-2" \
+  alt_names="localhost" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka-2.json
+
+jq -r ".data.private_key"  /vault/certs/kafka-2.json > /vault/certs/kafka-2.key
+jq -r ".data.certificate"  /vault/certs/kafka-2.json > /vault/certs/kafka-2.crt
+chmod 600 /vault/certs/kafka-2.key
+
+openssl pkcs12 -export \
+  -inkey    /vault/certs/kafka-2.key \
+  -in       /vault/certs/kafka-2.crt \
+  -certfile /vault/certs/ca-chain.crt \
+  -name kafka-2 \
+  -out /vault/certs/kafka-2.p12 \
+  -passout pass:changeit
+
+# ---------- KAFKA-3 ----------
+vault write -format=json kafka-int-ca/issue/kafka-server \
+  common_name="kafka-3" \
+  alt_names="localhost" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka-3.json
+
+jq -r ".data.private_key"  /vault/certs/kafka-3.json > /vault/certs/kafka-3.key
+jq -r ".data.certificate"  /vault/certs/kafka-3.json > /vault/certs/kafka-3.crt
+chmod 600 /vault/certs/kafka-3.key
+
+openssl pkcs12 -export \
+  -inkey    /vault/certs/kafka-3.key \
+  -in       /vault/certs/kafka-3.crt \
+  -certfile /vault/certs/ca-chain.crt \
+  -name kafka-3 \
+  -out /vault/certs/kafka-3.p12 \
+  -passout pass:changeit
 
 #####
-
 keytool -import -alias root-ca -trustcacerts \
   -file root-ca.pem \
   -keystore kafka-truststore.jks \
@@ -139,6 +176,3 @@ keytool -import -alias kafka-int-ca -trustcacerts \
   -file kafka-int-ca.pem \
   -keystore kafka-truststore.jks \
   -storepass changeit -noprompt
-
-
-
