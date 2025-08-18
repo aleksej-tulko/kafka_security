@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.4
@@ -19,94 +21,144 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
+
+      # SSL
       ZOOKEEPER_SECURE_CLIENT_PORT: 2281
-      ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
       ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+
       ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper.p12
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
+      ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
+
       ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+
       ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
-  x-kafka-common:
-    &kafka-common
+
+  kafka-1:
     image: confluentinc/cp-kafka:7.4.4
     depends_on:
       - zookeeper
-    environment:
-      &kafka-common-env
-
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
-      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
-      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
-      
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
-      KAFKA_DELETE_TOPIC_ENABLE: false
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
-      
-      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.p12
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka_creds
-
-      KAFKA_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
-
-      KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
-      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
-    networks:
-      - confluent
-  kafka-1:
-    <<: *kafka-common
     restart: always
     container_name: kafka-1
+    hostname: kafka-1
     ports:
       - 9093:9093
     volumes:
       - kafka_1:/var/lib/kafka/data
       - ./vault/certs:/etc/kafka/secrets:ro
+    networks:
+      - confluent
     environment:
-      <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9093
-    hostname: kafka-1
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_SSL_TRUSTSTORE_TYPE: JKS
+
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+
   kafka-2:
-    <<: *kafka-common
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
     restart: always
     container_name: kafka-2
+    hostname: kafka-2
     ports:
       - 9095:9093
     volumes:
       - kafka_2:/var/lib/kafka/data
-      - ./vault/certs:/etc/kafka/secrets
+      - ./vault/certs:/etc/kafka/secrets:ro
+    networks:
+      - confluent
     environment:
-      <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9095
-    hostname: kafka-2
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_SSL_TRUSTSTORE_TYPE: JKS
+
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+
   kafka-3:
-    <<: *kafka-common
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
     restart: always
     container_name: kafka-3
+    hostname: kafka-3
     ports:
       - 9097:9093
     volumes:
       - kafka_3:/var/lib/kafka/data
-      - ./vault/certs:/etc/kafka/secrets
+      - ./vault/certs:/etc/kafka/secrets:ro
+    networks:
+      - confluent
     environment:
-      <<: *kafka-common-env
       KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9097
-    hostname: kafka-3
-    
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.p12
+      KAFKA_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_SSL_KEYSTORE_TYPE: PKCS12
+
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_SSL_TRUSTSTORE_TYPE: JKS
+
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+
   vault:
     image: hashicorp/vault
     container_name: vault
