@@ -196,3 +196,9 @@ keytool -import -alias kafka-int-ca -trustcacerts \
   -file kafka-int-ca.pem \
   -keystore kafka-truststore.jks \
   -storepass changeit -noprompt
+
+
+
+echo 'changeit' > vault/certs/kafka_creds
+sudo chmod 1000:1000 vault/certs/ -R
+

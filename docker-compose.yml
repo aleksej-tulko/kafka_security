@@ -10,8 +10,6 @@ services:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
       - ./vault/certs:/etc/kafka/secrets:ro
-    networks:
-      - confluent
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
@@ -28,6 +26,9 @@ services:
       ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit
       ZOOKEEPER_SSL_CLIENT_AUTH: need
+    networks:
+      - confluent
+
   x-kafka-common:
     &kafka-common
     image: confluentinc/cp-kafka:7.4.4
@@ -41,12 +42,15 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
 
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
+
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: true
+      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
+
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
-      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
 
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,EXTERNAL:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
@@ -62,9 +66,9 @@ services:
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka_creds
       KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka_creds
-
     networks:
       - confluent
+
   kafka-1:
     <<: *kafka-common
     restart: always
@@ -83,6 +87,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093,EXTERNAL://localhost:9094
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
     hostname: kafka-1
+
   kafka-2:
     <<: *kafka-common
     restart: always
@@ -101,6 +106,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2:9093,EXTERNAL://localhost:9096
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-2.p12
     hostname: kafka-2
+
   kafka-3:
     <<: *kafka-common
     restart: always
@@ -119,7 +125,30 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3:9093,EXTERNAL://localhost:9098
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-3.p12
     hostname: kafka-3
-    
+
+  ui:
+    image: provectuslabs/kafka-ui:v0.7.0
+    restart: always
+    container_name: ui
+    volumes:
+      - ./vault/certs:/vault/certs
+    ports:
+      - 8080:8080
+    environment:
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-1:9093,kafka-2:9093,kafka-3:9093
+      KAFKA_CLUSTERS_0_NAME: kafka
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SSL
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_TYPE: JKS
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_TYPE: PKCS12
+
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /vault/certs/kafka-truststore.jks
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /vault/certs/kafka-client.p12
+
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_PASSWORD: changeit
+    networks:
+      - confluent
+
   vault:
     image: hashicorp/vault
     container_name: vault
@@ -135,27 +164,6 @@ services:
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
-
-  ui:
-    image: provectuslabs/kafka-ui:v0.7.0
-    restart: always
-    container_name: ui
-    volumes:
-      - ./vault/certs:/vault/certs
-    ports:
-      - 8080:8080
-    environment:
-      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-1:9093,kafka-2:9093,kafka-3:9093
-      KAFKA_CLUSTERS_0_NAME: kafka
-      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SSL
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /vault/certs/kafka-truststore.jks
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: changeit
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /vault/certs/kafka-client.p12
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_PASSWORD: changeit
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_TYPE: PKCS12
-    networks:
-      - confluent
 
 volumes:
   zookeeper_log:
