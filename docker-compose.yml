@@ -45,6 +45,7 @@ services:
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
       KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
       KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
 
@@ -83,7 +84,6 @@ services:
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
     hostname: kafka-1
   kafka-2:
     <<: *kafka-common
@@ -100,6 +100,7 @@ services:
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-2.p12
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2:9093
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-2.p12
     hostname: kafka-2
   kafka-3:
     <<: *kafka-common
@@ -116,6 +117,7 @@ services:
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-3.p12
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3:9093
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-3.p12
     hostname: kafka-3
     
   vault:
