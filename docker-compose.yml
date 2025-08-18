@@ -9,6 +9,7 @@ services:
     volumes:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
+      - ./vault/certs:/etc/kafka/secrets:ro
     networks:
       - confluent
     environment:
