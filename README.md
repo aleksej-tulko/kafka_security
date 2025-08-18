@@ -68,7 +68,7 @@ vault write auth/token/roles/kafka-server allowed_policies=kafka-server period=2
 apk add --no-cache openssl jq >/dev/null
 
 vault write -format=json kafka-int-ca/issue/kafka-server \
-  common_name="kafka.servers.kafka.acme.com" \
+  common_name="localhost" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
   > /vault/certs/kafka.json
@@ -109,11 +109,3 @@ sudo keytool -importkeystore \
   -srcstorepass changeit \
   -srcstoretype PKCS12 \
   -alias kafka -noprompt
-
-openssl pkcs12 -export \
-  -inkey kafka.key \
-  -in kafka.crt \
-  -certfile ca-chain.crt \
-  -name kafka \
-  -out kafka.p12 \
-  -passout pass:changeit
