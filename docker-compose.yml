@@ -168,7 +168,7 @@ services:
     entrypoint: vault server -config /vault/config/config.hcl
 
   vault-agent:
-    image: vault:1.16
+    image: hashicorp/vault
     container_name: vault-agent
     volumes:
       - ./vault/agent:/vault/config
