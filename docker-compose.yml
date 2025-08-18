@@ -19,15 +19,15 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SECURE_CLIENT_PORT: 2281
-      ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
-      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
-      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper.p12
-      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
-      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      # ZOOKEEPER_SECURE_CLIENT_PORT: 2281
+      # ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      # ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
+      # ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+      # ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper.p12
+      # ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
+      # ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      # ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      # ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
   x-kafka-common:
     &kafka-common
     image: confluentinc/cp-kafka:7.4.4
