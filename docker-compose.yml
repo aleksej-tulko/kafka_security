@@ -76,7 +76,7 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093
     hostname: kafka-1
   kafka-2:
     <<: *kafka-common
@@ -91,7 +91,7 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9095
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2:9093
     hostname: kafka-2
   kafka-3:
     <<: *kafka-common
@@ -106,7 +106,7 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 3
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9097
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3:9093
     hostname: kafka-3
     
   vault:
