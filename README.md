@@ -31,8 +31,8 @@ vault write kafka-int-ca/config/urls \
   crl_distribution_points="$VAULT_ADDR/v1/kafka-int-ca/crl"
 
 #####
-vault write kafka-int-ca/roles/kafka-server \
-  allowed_domains="localhost,kafka,kafka-1,kafka-2,kafka-3" \
+vault write kafka-int-ca/roles/kafka-broker \
+  allowed_domains="localhost,kafka-1,kafka-2,kafka-3" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
@@ -42,7 +42,7 @@ vault write kafka-int-ca/roles/kafka-server \
   ext_key_usage="ServerAuth,ClientAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="kafka,localhost,kafka-1,kafka-2,kafka-3" \
+  allowed_domains="localhost,ui" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
@@ -51,7 +51,7 @@ vault write kafka-int-ca/roles/kafka-client \
   key_usage="DigitalSignature,KeyEncipherment" \
   ext_key_usage="ClientAuth"
 
-vault write kafka-int-ca/roles/zookeeper-server \
+vault write kafka-int-ca/roles/zookeeper \
   allowed_domains="localhost,zookeeper" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
@@ -70,27 +70,27 @@ EOF
 vault policy write kafka-client kafka-client.hcl
 vault write auth/token/roles/kafka-client allowed_policies=kafka-client period=24h
 
-cat > kafka-server.hcl <<EOF
-path "kafka-int-ca/issue/kafka-server" {
+cat > kafka-broker.hcl <<EOF
+path "kafka-int-ca/issue/kafka-broker" {
   capabilities = ["update"]
 }
 EOF
-vault policy write kafka-server kafka-server.hcl
-vault write auth/token/roles/kafka-server allowed_policies=kafka-server period=24h
+vault policy write kafka-broker kafka-broker.hcl
+vault write auth/token/roles/kafka-broker allowed_policies=kafka-server period=24h
 
-cat > zookeeper-server.hcl <<EOF
-path "kafka-int-ca/issue/zookeeper-server" {
+cat > zookeeper.hcl <<EOF
+path "kafka-int-ca/issue/zookeeper" {
   capabilities = ["update"]
 }
 EOF
-vault policy write zookeeper-server zookeeper-server.hcl
-vault write auth/token/roles/zookeeper-server allowed_policies=kafka-server period=24h
+vault policy write zookeeper zookeeper.hcl
+vault write auth/token/roles/zookeeper allowed_policies=kafka-server period=24h
 
 #####
 apk add --no-cache openssl jq >/dev/null
 
 # ---------- ZOOKEEPER ----------
-vault write -format=json kafka-int-ca/issue/zookeeper-server \
+vault write -format=json kafka-int-ca/issue/zookeeper \
   common_name="zookeeper" \
   alt_names="zookeeper,localhost" \
   ip_sans="127.0.0.1" \
@@ -110,7 +110,7 @@ openssl pkcs12 -export \
   -passout pass:changeit
 
 # ---------- KAFKA-1 ----------
-vault write -format=json kafka-int-ca/issue/kafka-server \
+vault write -format=json kafka-int-ca/issue/kafka-broker \
   common_name="kafka-1" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
@@ -129,7 +129,7 @@ openssl pkcs12 -export \
   -passout pass:changeit
 
 # ---------- KAFKA-2 ----------
-vault write -format=json kafka-int-ca/issue/kafka-server \
+vault write -format=json kafka-int-ca/issue/kafka-broker \
   common_name="kafka-2" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
@@ -148,7 +148,7 @@ openssl pkcs12 -export \
   -passout pass:changeit
 
 # ---------- KAFKA-3 ----------
-vault write -format=json kafka-int-ca/issue/kafka-server \
+vault write -format=json kafka-int-ca/issue/kafka-broker \
   common_name="kafka-3" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
@@ -165,6 +165,26 @@ openssl pkcs12 -export \
   -name kafka-3 \
   -out /vault/certs/kafka-3.p12 \
   -passout pass:changeit
+
+# ---------- UI ----------
+
+vault write -format=json kafka-int-ca/issue/kafka-client \
+  common_name="ui" \
+  alt_names="ui,localhost" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka-client.json
+
+jq -r ".data.private_key"   /vault/certs/kafka-client.json > /vault/certs/kafka-client.key
+jq -r ".data.certificate"   /vault/certs/kafka-client.json > /vault/certs/kafka-client.crt
+chmod 600 /vault/certs/kafka-client.key
+
+openssl pkcs12 -export \
+  -inkey /vault/certs/kafka-client.key \
+  -in /vault/certs/kafka-client.crt \
+  -certfile /vault/certs/ca-chain.crt \
+  -name ui \
+  -passout pass:changeit \
+  -out /vault/certs/kafka-client.p12
 
 #####
 keytool -import -alias root-ca -trustcacerts \
