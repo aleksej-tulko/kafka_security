@@ -82,6 +82,8 @@ services:
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
       KAFKA_LISTENERS: SSL://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
     hostname: kafka-1
   kafka-2:
     <<: *kafka-common
