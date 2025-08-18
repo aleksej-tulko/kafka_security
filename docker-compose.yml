@@ -43,13 +43,13 @@ services:
 
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2281
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
-      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
       KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
       KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
 
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,EXTERNAL:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
 
       KAFKA_SSL_CLIENT_AUTH: required
@@ -72,6 +72,7 @@ services:
     container_name: kafka-1
     ports:
       - 9093:9093
+      - 9094:9094
     volumes:
       - kafka_1:/var/lib/kafka/data
       - ./vault/certs:/etc/kafka/secrets:ro
@@ -79,8 +80,8 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
-      KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093
+      KAFKA_LISTENERS: SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1:9093,EXTERNAL://localhost:9094
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
     hostname: kafka-1
   kafka-2:
@@ -89,6 +90,7 @@ services:
     container_name: kafka-2
     ports:
       - 9095:9093
+      - 9096:9094
     volumes:
       - kafka_2:/var/lib/kafka/data
       - ./vault/certs:/etc/kafka/secrets
@@ -96,8 +98,8 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-2.p12
-      KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2:9093
+      KAFKA_LISTENERS: SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2:9093,EXTERNAL://localhost:9096
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-2.p12
     hostname: kafka-2
   kafka-3:
@@ -106,6 +108,7 @@ services:
     container_name: kafka-3
     ports:
       - 9097:9093
+      - 9098:9094
     volumes:
       - kafka_3:/var/lib/kafka/data
       - ./vault/certs:/etc/kafka/secrets
@@ -113,8 +116,8 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 3
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-3.p12
-      KAFKA_LISTENERS: SSL://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3:9093
+      KAFKA_LISTENERS: SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3:9093,EXTERNAL://localhost:9098
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-3.p12
     hostname: kafka-3
     
