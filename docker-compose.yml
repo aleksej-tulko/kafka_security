@@ -132,11 +132,13 @@ services:
     container_name: ui
     volumes:
       - ./vault/certs:/vault/certs
+    user: 1000:1000
     ports:
       - 8080:8080
     environment:
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-1:9093,kafka-2:9093,kafka-3:9093
       KAFKA_CLUSTERS_0_NAME: kafka
+
       KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SSL
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_TYPE: JKS
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_TYPE: PKCS12
