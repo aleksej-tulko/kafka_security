@@ -167,6 +167,16 @@ services:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
 
+  vault-agent:
+    image: vault:1.16
+    container_name: vault-agent
+    volumes:
+      - ./vault/agent:/vault/config
+      - ./vault/certs:/vault/certs
+    command: agent -config=/vault/config/agent.hcl
+    environment:
+      VAULT_ADDR: http://vault:8200
+
 volumes:
   zookeeper_log:
   zookeeper_data:
