@@ -42,11 +42,11 @@ vault write kafka-int-ca/roles/kafka-server \
   ext_key_usage="ServerAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="kafka,localhost,kafka-1,kafka-2,kafka-3" \
+  allowed_domains="ui,localhost" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
-  server_flag=true client_flag=false \
+  server_flag=false client_flag=true \
   key_type="rsa" key_bits=2048 ttl="720h" max_ttl="720h" \
   key_usage="DigitalSignature,KeyEncipherment" \
   ext_key_usage="ClientAuth"
