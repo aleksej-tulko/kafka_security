@@ -37,11 +37,11 @@ services:
       &kafka-common-env
 
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
-      KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
+      # KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-truststore.jks
+      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+      # KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      # KAFKA_ZOOKEEPER_SECURITY_PROTOCOL: SSL
       
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
       KAFKA_DELETE_TOPIC_ENABLE: false
