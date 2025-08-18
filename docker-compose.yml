@@ -60,7 +60,7 @@ services:
 
       KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
-
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
     networks:
       - confluent
   kafka-1:
