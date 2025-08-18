@@ -67,11 +67,11 @@ vault write auth/token/roles/kafka-server allowed_policies=kafka-server period=2
 #####
 apk add --no-cache openssl jq >/dev/null
 
-vault write -format=json kafka-int-ca/issue/kafka-server \
-  common_name="localhost" \
-  alt_names="localhost" \
-  ip_sans="127.0.0.1" \
-  > /vault/certs/kafka.json
+vault write -format=json pki_int/issue/kafka-int-ca \
+    common_name="kafka" \
+    alt_names="kafka,localhost,kafka-1" \
+    ip_sans="127.0.0.1" \
+    ttl=87600h > kafka.json
 
 jq -r ".data.private_key"  /vault/certs/kafka.json > /vault/certs/kafka.key
 jq -r ".data.certificate"  /vault/certs/kafka.json > /vault/certs/kafka.crt
