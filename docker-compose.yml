@@ -21,6 +21,7 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SECURE_CLIENT_PORT: 2281
       ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
+      ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
       ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
       ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper.p12
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
