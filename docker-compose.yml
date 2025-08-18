@@ -130,6 +130,7 @@ services:
   ui:
     image: provectuslabs/kafka-ui:v0.7.0
     restart: always
+    container_name: ui
     volumes:
       - ./vault/certs:/vault/certs
     ports:
