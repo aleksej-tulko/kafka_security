@@ -5,7 +5,6 @@ services:
     container_name: zookeeper
     hostname: zookeeper
     ports:
-      - 2181:2181
       - 2281:2281
     volumes:
       - zookeeper_log:/var/lib/zookeeper/log
