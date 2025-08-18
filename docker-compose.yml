@@ -1,6 +1,6 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.10
+    image: confluentinc/cp-zookeeper:7.4.4
     restart: always
     container_name: zookeeper
     hostname: zookeeper
@@ -19,7 +19,7 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
   x-kafka-common:
     &kafka-common
-    image: confluentinc/cp-kafka:7.0.10
+    image: confluentinc/cp-kafka:7.4.4
     depends_on:
       - zookeeper
     environment:

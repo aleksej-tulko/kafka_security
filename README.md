@@ -32,7 +32,7 @@ vault write kafka-int-ca/config/urls \
 
 #####
 vault write kafka-int-ca/roles/kafka-server \
-  allowed_domains="servers.kafka.acme.com" \
+  allowed_domains="kafka,localhost,kafka-1" \
   allow_subdomains=true allow_bare_domains=false \
   allow_ip_sans=true allow_localhost=true \
   key_type="rsa" key_bits=2048 ttl="720h" max_ttl="720h" \
@@ -41,7 +41,7 @@ vault write kafka-int-ca/roles/kafka-server \
   ext_key_usage="ServerAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="clients.kafka.acme.com" \
+  allowed_domains="kafka,localhost,kafka-1" \
   allow_subdomains=true allow_bare_domains=false \
   key_type="rsa" key_bits=2048 ttl="720h" max_ttl="720h" \
   server_flag=false client_flag=true \
@@ -67,11 +67,11 @@ vault write auth/token/roles/kafka-server allowed_policies=kafka-server period=2
 #####
 apk add --no-cache openssl jq >/dev/null
 
-vault write -format=json pki_int/issue/kafka-int-ca \
-    common_name="kafka" \
-    alt_names="kafka,localhost,kafka-1" \
-    ip_sans="127.0.0.1" \
-    ttl=87600h > kafka.json
+vault write -format=json kafka-int-ca/issue/kafka-server \
+  common_name="localhost" \
+  alt_names="localhost,kafka,kafka-1" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka.json
 
 jq -r ".data.private_key"  /vault/certs/kafka.json > /vault/certs/kafka.key
 jq -r ".data.certificate"  /vault/certs/kafka.json > /vault/certs/kafka.crt
@@ -98,7 +98,7 @@ keytool -import -alias kafka-int-ca -trustcacerts \
   -file kafka-int-ca.pem \
   -keystore kafka-truststore.jks \
   -storepass changeit -noprompt
-Certificate was added to keystore
+
 
 #####
 
