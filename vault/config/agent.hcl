@@ -5,11 +5,10 @@ auto_auth {
   method "approle" {
     mount_path = "auth/approle"
     config = {
-      role_id_file_path   = "/vault/approle/kafka-client/role_id"
-      secret_id_file_path = "/vault/approle/kafka-client/secret_id"
+      role_id_file_path   = "/vault/certs/approle/kafka-client/role_id"
+      secret_id_file_path = "/vault/certs/approle/kafka-client/secret_id"
     }
   }
-  sink "file" { config = { path = "/vault/token/kafka-client.token" } }
 }
 
 template {
