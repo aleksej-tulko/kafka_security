@@ -58,8 +58,9 @@ services:
       KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
 
       KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+      KAFKA_SSL_CLIENT_AUTH: required
     networks:
       - confluent
   kafka-1:
