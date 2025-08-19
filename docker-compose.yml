@@ -174,7 +174,7 @@ services:
     build:
       context: ./vault
       dockerfile: Dockerfile
-    container_name: vault-agent-kafka-client
+    container_name: kafka-client-cert-update
     volumes:
       - vault_config:/vault/config
       - vault_certs:/vault/certs
