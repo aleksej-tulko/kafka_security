@@ -81,6 +81,30 @@ def producer_infinite_loop():
     finally:
         producer.flush()
 
+def consume_infinite_loop(consumer: Consumer) -> None:
+    """Получение сообщений из брокера по одному."""
+    consumer.subscribe([TOPIC])
+    try:
+        while True:
+            msg = consumer.poll(0.1)
+
+            if msg is None or msg.error():
+                continue
+
+            value = msg.value().decode('utf-8')
+            consumer.commit(asynchronous=False)
+
+            print(
+                f'Получено сообщение: {msg.key().decode('utf-8')}, '
+                f'{value}, offset={msg.offset()}. '
+                f'Размер сообщения - {len(msg.value())} байтов.'
+            )
+
+    except KafkaException as KE:
+        raise KafkaError(KE)
+    finally:
+        consumer.close()
+
 
 if __name__ == "__main__":
     producer_thread = Thread(
@@ -88,7 +112,13 @@ if __name__ == "__main__":
         args=(),
         daemon=True
     )
+    consumer_thread = Thread(
+        target=consume_infinite_loop,
+        args=(consumer_conf,),
+        daemon=True
+    )
     producer_thread.start()
+    consumer_thread.start()
     while True:
         print('Выполняется программа')
         sleep(10)
