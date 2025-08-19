@@ -23,7 +23,7 @@ SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
 TOPIC = os.getenv('TOPIC', 'ssl-topic')
 COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
-GROUP_ID = os.getenv('GROUP_ID', 'lz4')
+GROUP_ID = os.getenv('GROUP_ID', 'ssl')
 CERTS_FOLDER = '/opt/certs'
 
 conf = {

@@ -225,7 +225,7 @@ vault write -format=json kafka-int-ca/issue/kafka-client \
   common_name="limited-client" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
-  > /vault/certs/kafka-client.json
+  > /vault/certs/limited-kafka-client.json
 
 jq -r ".data.private_key"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.key
 jq -r ".data.certificate"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.crt
@@ -260,12 +260,13 @@ sudo keytool -import -alias kafka-int-ca -trustcacerts \
 sudo vim kafka_creds
 sudo chown 1000:1000 /opt/certs/ -R
 
-cd /home/aleksejtulko/kafka_security
+cd /home/aleksej.tulko/kafka_security
 sudo docker compose up zookeeper -d
 sudo docker compose logs zookeeper
 openssl s_client -connect localhost:2281 -servername zookeeper -showcerts </dev/null
 sudo docker compose up kafka-1 kafka-2 kafka-3 -d
 openssl s_client -connect localhost:9095 -servername kafka-2 -showcerts </dev/null
+sudo docker compose up kafka-client-vault-agent -d
 sudo docker compose logs kafka-client-vault-agent
 sudo docker cp vault:/vault/certs/kafka-client.p12 ./
 sudo openssl pkcs12 -in kafka-client.p12 -clcerts -nokeys -nodes > check_cert
