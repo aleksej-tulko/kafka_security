@@ -9,7 +9,8 @@ services:
     volumes:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
-      - /opt/certs:/etc/zookeeper/secrets:ro
+      - /opt/certs:/etc/zookeeper/certs:ro
+      - /opt/shared:/etc/zookeepers/secrets
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
@@ -19,9 +20,9 @@ services:
       ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
       ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
       ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
-      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/secrets/zookeeper.p12
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/certs/zookeeper.p12
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/secrets/kafka-truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/certs/kafka-truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
       ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit
@@ -104,14 +105,15 @@ services:
       - 9094:9094
     volumes:
       - kafka_1:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/secrets
+      - /opt/certs:/etc/kafka/certs
+      - /opt/shared:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-1:9093,EXTERNAL://localhost:9094
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/certs/kafka-1.p12
     hostname: kafka-1
 
   kafka-2:
@@ -124,13 +126,14 @@ services:
     volumes:
       - kafka_2:/var/lib/kafka/data
       - /opt/certs:/etc/kafka/secrets
+      - /opt/shared:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-2.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-2:9093,EXTERNAL://localhost:9096
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-2.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/certs/kafka-2.p12
     hostname: kafka-2
 
   kafka-3:
@@ -143,13 +146,14 @@ services:
     volumes:
       - kafka_3:/var/lib/kafka/data
       - /opt/certs:/etc/kafka/secrets
+      - /opt/shared:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 3
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-3.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-3:9093,EXTERNAL://localhost:9098
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-3.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/certs/kafka-3.p12
     hostname: kafka-3
 
   ui:
@@ -157,7 +161,7 @@ services:
     restart: always
     container_name: ui
     volumes:
-      - /opt/certs/:/etc/ui/secrets
+      - /opt/certs/:/etc/ui/certs
     user: 1000:1000
     ports:
       - 8080:8080
@@ -170,8 +174,8 @@ services:
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_TYPE: JKS
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_TYPE: PKCS12
 
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /etc/ui/secrets/kafka-truststore.jks
-      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /etc/ui/secrets/kafka-client.p12
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /etc/ui/certs/kafka-truststore.jks
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /etc/ui/certs/kafka-client.p12
 
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: changeit
       KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_PASSWORD: changeit
