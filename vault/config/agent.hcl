@@ -17,7 +17,7 @@ template {
 }
 
 exec {
-  command = ["/vault/config/make-p12.sh"]
+  command = "/vault/config/make-p12.sh"
   restart_on_secret_changes = true
   restart_stop_signal = "SIGTERM"
 }
