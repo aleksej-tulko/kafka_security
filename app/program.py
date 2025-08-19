@@ -60,7 +60,7 @@ def delivery_report(err, msg) -> None:
         print(f'Сообщение доставлено в {msg.topic()} [{msg.partition()}]')
 
 
-def create_message() -> None:
+def create_message(producer: Producer) -> None:
     """Сериализация сообщения и отправка в брокер."""
     producer.produce(
         topic=TOPIC,
@@ -80,6 +80,7 @@ def producer_infinite_loop():
         raise KafkaError(e)
     finally:
         producer.flush()
+
 
 def consume_infinite_loop(consumer: Consumer) -> None:
     """Получение сообщений из брокера по одному."""
@@ -109,12 +110,12 @@ def consume_infinite_loop(consumer: Consumer) -> None:
 if __name__ == "__main__":
     producer_thread = Thread(
         target=producer_infinite_loop,
-        args=(),
+        args=(producer,),
         daemon=True
     )
     consumer_thread = Thread(
         target=consume_infinite_loop,
-        args=(consumer_conf,),
+        args=(consumer,),
         daemon=True
     )
     producer_thread.start()
