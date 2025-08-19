@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 import uuid
 from threading import Thread
 from time import sleep
@@ -20,61 +22,82 @@ RETRIES = os.getenv('RETRIES', '3')
 SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
 TOPIC = os.getenv('TOPIC', 'ssl-topic')
-
-print(TOPIC)
+COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
+GROUP_ID = os.getenv('GROUP_ID', 'lz4')
+CERTS_FOLDER = '/opt/certs'
 
 conf = {
-    "bootstrap.servers":
-    "kafka-1:9093,kafka-2:9093,kafka-3:9093",
-    "security.protocol": "SSL",
-    "ssl.ca.location": "/opt/certs/root-ca.pem",
-    "ssl.certificate.location": "/opt/certs/kafka-client.crt",
-    "ssl.key.location": "/opt/certs/kafka-client.key",
+    'bootstrap.servers':
+    'kafka-1:9093,kafka-2:9093,kafka-3:9093',
+    'security.protocol': 'SSL',
+    'ssl.ca.location': f'{CERTS_FOLDER}/root-ca.pem',
+    'ssl.certificate.location': f'{CERTS_FOLDER}/kafka-client.crt',
+    'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
 }
 
 producer_conf = conf | {
-    "acks": ACKS_LEVEL,
-    "retries": RETRIES,
-    "linger.ms": LINGER_MS,
-    "compression.type": "lz4"
+    'acks': ACKS_LEVEL,
+    'retries': RETRIES,
+    'linger.ms': LINGER_MS,
+    'compression.type': COMPRESSION_TYPE
 }
 
 consumer_conf = conf | {
-    "auto.offset.reset": AUTOOFF_RESET,
-    "enable.auto.commit": ENABLE_AUTOCOMMIT,
-    "session.timeout.ms": SESSION_TIME_MS,
-    "group.id": "ssl_client",
-    "fetch.min.bytes": FETCH_MIN_BYTES,
-    "fetch.wait.max.ms": FETCH_WAIT_MAX_MS
+    'auto.offset.reset': AUTOOFF_RESET,
+    'enable.auto.commit': ENABLE_AUTOCOMMIT,
+    'session.timeout.ms': SESSION_TIME_MS,
+    'group.id': GROUP_ID,
+    'fetch.min.bytes': FETCH_MIN_BYTES,
+    'fetch.wait.max.ms': FETCH_WAIT_MAX_MS
 }
 
 producer = Producer(producer_conf)
 consumer = Consumer(consumer_conf)
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
+class LoggerMsg:
+    """Сообщения для логгирования."""
+
+    MSG_NOT_DELIVERED = 'Ошибка доставки {err}.'
+    MSG_DELIVERED = 'Сообщение доставлено в топик {topic}.'
+    MSG_RECEIVED = ('Получено сообщение. Ключ - {key}, '
+                    'значение - {value}, офсет - {offset}. '
+                    'Размер сообщения - {size} байтов.'
+                    )
+    PROGRAM_RUNNING = 'Выполняется программа.'
+
 
 def delivery_report(err, msg) -> None:
     """Отчет о доставке."""
     if err is not None:
-        print(f'Сообщение не отправлено: {err}')
+        logger.error(msg=LoggerMsg.MSG_NOT_DELIVERED.format(err=err))
     else:
-        print(f'Сообщение доставлено в {msg.topic()} [{msg.partition()}]')
+        logger.info(msg=LoggerMsg.MSG_DELIVERED.format(topic=msg.topic))
 
 
 def create_message(producer: Producer) -> None:
     """Сериализация сообщения и отправка в брокер."""
     producer.produce(
         topic=TOPIC,
-        key="SSL Message",
-        value=f"val-{uuid.uuid4()}".encode('utf-8'),
+        key='SSL Message',
+        value=f'val-{uuid.uuid4()}'.encode('utf-8'),
         on_delivery=delivery_report
     )
 
 
-def producer_infinite_loop():
+def producer_infinite_loop(producer: Producer):
     """Запуска цикла для генерации сообщения."""
     try:
         while True:
-            create_message()
+            create_message(producer=producer)
             producer.flush()
     except (KafkaException, Exception) as e:
         raise KafkaError(e)
@@ -95,11 +118,10 @@ def consume_infinite_loop(consumer: Consumer) -> None:
             value = msg.value().decode('utf-8')
             consumer.commit(asynchronous=False)
 
-            print(
-                f'Получено сообщение: {msg.key().decode('utf-8')}, '
-                f'{value}, offset={msg.offset()}. '
-                f'Размер сообщения - {len(msg.value())} байтов.'
-            )
+            logger.debug(msg=LoggerMsg.MSG_RECEIVED.format(
+                key=msg.key().decode('utf-8'), value=value,
+                offset=msg.offset(), size=len(msg.value())
+            ))
 
     except KafkaException as KE:
         raise KafkaError(KE)
@@ -121,5 +143,5 @@ if __name__ == "__main__":
     producer_thread.start()
     consumer_thread.start()
     while True:
-        print('Выполняется программа')
+        logger.debug(msg=LoggerMsg.PROGRAM_RUNNING)
         sleep(10)
