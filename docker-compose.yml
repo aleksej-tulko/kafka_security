@@ -162,8 +162,8 @@ services:
       - 8200:8200
     restart: always
     volumes:
-      - vault/config:/vault/config
-      - vault/certs:/vault/certs
+      - vault_config:/vault/config
+      - vault_certs:/vault/certs
       - vault_secrets:/vault/secrets
     cap_add:
       - IPC_LOCK
@@ -175,8 +175,8 @@ services:
       dockerfile: vault/Dockerfile
     container_name: vault-agent-kafka-client
     volumes:
-      - vault/config:/vault/config
-      - vault/certs:/vault/certs
+      - vault_config:/vault/config
+      - vault_certs:/vault/certs
       - vault_secrets:/vault/secrets
     cap_add:
       - IPC_LOCK
