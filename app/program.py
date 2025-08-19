@@ -6,9 +6,9 @@ if __name__ == "__main__":
     producer_conf = {
         "bootstrap.servers": "localhost:9095",
         "security.protocol": "SSL",
-        "ssl.ca.location": "ca.crt",
-        "ssl.certificate.location": "kafka-1-creds/kafka-1.crt",
-        "ssl.key.location": "kafka-1-creds/kafka-1.key",
+        "ssl.ca.location": "/opt/certs/root-ca.pem",
+        "ssl.certificate.location": "/opt/certs/kafka-client.crt",
+        "ssl.key.location": "/opt/certs/kafka-client.key",
     }
     producer = Producer(producer_conf)
     key = f"key-{uuid.uuid4()}"
