@@ -162,9 +162,9 @@ services:
       - 8200:8200
     restart: always
     volumes:
-      - ./vault/storage:/vault/storage
       - ./vault/config:/vault/config
       - ./vault/certs:/vault/certs
+      - vault_secrets:/vault/secrets
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
@@ -177,6 +177,7 @@ services:
     volumes:
       - ./vault/config:/vault/config
       - ./vault/certs:/vault/certs
+      - vault_secrets:/vault/secrets
     cap_add:
       - IPC_LOCK
     command: agent -config=/vault/config/agent.hcl -log-level=info
@@ -189,6 +190,7 @@ volumes:
   kafka_1:
   kafka_2:
   kafka_3:
+  vault_secrets:
 
 networks:
   confluent:
