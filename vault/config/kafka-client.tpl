@@ -1,4 +1,4 @@
-{{ with secret "kafka-int-ca/issue/kafka-client" "common_name=client" "alt_names=ui,localhost" "ip_sans=127.0.0.1" }}
+{{ with secret "kafka-int-ca/issue/kafka-client" "common_name=client" "alt_names=localhost" "ip_sans=127.0.0.1" }}
 {
   "private_key": {{ .Data.private_key | toJSON }},
   "certificate": {{ .Data.certificate | toJSON }},
