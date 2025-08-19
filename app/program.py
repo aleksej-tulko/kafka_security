@@ -63,7 +63,7 @@ def create_message() -> None:
     producer.produce(
         topic=TOPIC,
         key="SSL Message",
-        value=uuid.uuid4().encode('utf-8'),
+        value=f"val-{uuid.uuid4()}".encode('utf-8'),
         on_delivery=delivery_report
     )
 
