@@ -43,7 +43,7 @@ vault write kafka-int-ca/roles/kafka-broker \
   ext_key_usage="ServerAuth,ClientAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="localhost,ui" \
+  allowed_domains="localhost,client" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
@@ -202,8 +202,8 @@ openssl pkcs12 -export \
 # ---------- UI ----------
 
 vault write -format=json kafka-int-ca/issue/kafka-client \
-  common_name="ui" \
-  alt_names="ui,localhost" \
+  common_name="client" \
+  alt_names="client,localhost" \
   ip_sans="127.0.0.1" \
   > /vault/certs/kafka-client.json
 
