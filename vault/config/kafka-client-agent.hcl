@@ -16,5 +16,5 @@ template {
   source      = "/vault/config/kafka-client.tpl"
   destination = "/vault/certs/kafka-client.json"
   perms = "0640"
-  command = "sh /vault/config/make-p12.sh"
+  command = "sh /vault/config/kafka-client-make-p12.sh"
 }
