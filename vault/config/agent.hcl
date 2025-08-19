@@ -5,8 +5,8 @@ auto_auth {
   method "approle" {
     mount_path = "auth/approle"
     config = {
-      role_id_file_path   = "/vault/secrets/kafka-broker-role_id"
-      secret_id_file_path = "/vault/secrets/kafka-broker-secret_id"
+      role_id_file_path   = "/vault/secrets/kafka-client-role_id"
+      secret_id_file_path = "/vault/secrets/kafka-client-secret_id"
       remove_secret_id_file_after_reading = false
     }
   }
