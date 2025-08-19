@@ -153,8 +153,8 @@ services:
 
   vault:
     build:
-      context: .
-      dockerfile: vault/Dockerfile
+      context: ./vault
+      dockerfile: Dockerfile
     container_name: vault
     environment:
       VAULT_ADDR: "http://127.0.0.1:8200"
