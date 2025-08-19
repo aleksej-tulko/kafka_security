@@ -21,6 +21,8 @@ SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
 TOPIC = os.getenv('TOPIC', 'ssl-topic')
 
+print(TOPIC)
+
 conf = {
     "bootstrap.servers":
     "kafka-1:9093,kafka-2:9093,kafka-3:9093",
