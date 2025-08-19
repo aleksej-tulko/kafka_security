@@ -69,7 +69,6 @@ services:
 
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
 
-      KAFKA_SUPER_USERS: User:admin
     networks:
       - confluent
 
