@@ -65,7 +65,7 @@ vault write kafka-int-ca/roles/zookeeper \
 #####
 cat > kafka-client.hcl <<EOF
 path "kafka-int-ca/issue/kafka-client" {
-  capabilities = ["update"]
+  capabilities = ["create", "update", "read"]
 }
 EOF
 vault policy write kafka-client kafka-client.hcl
@@ -73,7 +73,7 @@ vault write auth/token/roles/kafka-client allowed_policies=kafka-client period=2
 
 cat > kafka-broker.hcl <<EOF
 path "kafka-int-ca/issue/kafka-broker" {
-  capabilities = ["update"]
+  capabilities = ["create", "update", "read"]
 }
 EOF
 vault policy write kafka-broker kafka-broker.hcl
@@ -81,7 +81,7 @@ vault write auth/token/roles/kafka-broker allowed_policies=kafka-broker period=2
 
 cat > zookeeper.hcl <<EOF
 path "kafka-int-ca/issue/zookeeper" {
-  capabilities = ["update"]
+  capabilities = ["create", "update", "read"]
 }
 EOF
 vault policy write zookeeper zookeeper.hcl
