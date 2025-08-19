@@ -180,11 +180,10 @@ services:
       - vault_certs:/vault/certs
       - vault_secrets:/vault/secrets
     user: 100:1000
-    cap_add:
-      - IPC_LOCK
     command: agent -config=/vault/config/agent.hcl -log-level=info
     environment:
       VAULT_ADDR: http://vault:8200
+      SKIP_SETCAP: "true"
 
 volumes:
   zookeeper_log:
