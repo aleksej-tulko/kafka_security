@@ -163,7 +163,6 @@ services:
       - ./vault/storage:/vault/storage
       - ./vault/config:/vault/config
       - ./vault/certs:/vault/certs
-    user: 1000:1000
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
