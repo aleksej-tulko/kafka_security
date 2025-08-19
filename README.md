@@ -220,6 +220,11 @@ openssl pkcs12 -export \
   -out /vault/certs/kafka-client.p12
 
 #####
+
+sudo docker cp vault:/vault/certs/. /opt/certs/
+
+cd /opt/certs
+
 sudo keytool -import -alias root-ca -trustcacerts \
   -file root-ca.pem \
   -keystore kafka-truststore.jks \
@@ -232,6 +237,20 @@ sudo keytool -import -alias kafka-int-ca -trustcacerts \
 
 
 
-echo 'changeit' > kafka_creds
-sudo chown 1000:1000 vault/certs/ -R
+sudo vim kafka_creds
+sudo chown 1000:1000 /opt/certs/ -R
 
+cd /home/aleksejtulko/kafka_security
+sudo docker compose up zookeeper -d
+sudo docker compose logs zookeeper
+openssl s_client -connect localhost:2281 -servername zookeeper -showcerts </dev/null
+sudo docker compose up kafka-1 kafka-2 kafka-3 -d
+openssl s_client -connect localhost:9095 -servername kafka-2 -showcerts </dev/null
+sudo docker compose logs kafka-client-vault-agent
+sudo docker cp vault:/vault/certs/kafka-client.p12 ./
+sudo openssl pkcs12 -in kafka-client.p12 -clcerts -nokeys -nodes > check_cert
+cat check_cert | openssl x509 -noout -dates -subject -issuer
+sudo chown 1000:1000 kafka-client.p12
+sudo mv kafka-client.p12 /opt/certs/
+sudo docker compose restart ui
+sudo docker compose logs ui

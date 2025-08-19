@@ -1,0 +1,8 @@
+confluent_kafka==2.10.1
+attrs==25.3.0
+httpx==0.28.1
+jsonschema==4.24.0
+referencing==0.36.2
+Authlib==1.6.0
+cachetools==6.1.0
+python-dotenv==0.20.0

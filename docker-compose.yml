@@ -182,7 +182,7 @@ services:
     environment:
       VAULT_ADDR: http://vault:8200
       SKIP_SETCAP: "true"
-    command: agent -config=/vault/config/kafka-client-agent.hcl -log-level=info
+    entrypoint: agent -config=/vault/config/kafka-client-agent.hcl -log-level=info
 
 volumes:
   zookeeper_log:
