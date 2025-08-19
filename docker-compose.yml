@@ -131,7 +131,7 @@ services:
     restart: always
     container_name: ui
     volumes:
-      - ./vault/certs:/vault/certs
+      - vault_certs:/vault/certs
     user: 1000:1000
     ports:
       - 8080:8080
