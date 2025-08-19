@@ -184,6 +184,17 @@ services:
       SKIP_SETCAP: "true"
     entrypoint: agent -config=/vault/config/kafka-client-agent.hcl -log-level=info
 
+  
+  app:
+    build:
+      context: docker/
+      dockerfile: Dockerfile
+    volumes:
+      - /opt/certs/:/opt/certs
+    networks:
+      - confluent
+    restart: always
+
 volumes:
   zookeeper_log:
   zookeeper_data:
