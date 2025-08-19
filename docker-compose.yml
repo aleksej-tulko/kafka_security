@@ -187,8 +187,8 @@ services:
   
   app:
     build:
-      context: docker/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile
     user: 1000:1000
     volumes:
       - /opt/certs/:/opt/certs
