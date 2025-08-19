@@ -69,6 +69,19 @@ services:
     networks:
       - confluent
 
+  x-vault-common:
+    &vault-common
+    build:
+      context: ./vault
+      dockerfile: Dockerfile
+    volumes:
+      - vault_config:/vault/config
+      - vault_certs:/vault/certs
+      - vault_secrets:/vault/secrets
+    user: 100:1000
+    networks:
+      - confluent
+
   kafka-1:
     <<: *kafka-common
     restart: always
@@ -152,38 +165,24 @@ services:
       - confluent
 
   vault:
-    build:
-      context: ./vault
-      dockerfile: Dockerfile
+    <<: *vault-common
     container_name: vault
     environment:
       VAULT_ADDR: "http://127.0.0.1:8200"
     ports:
       - 8200:8200
     restart: always
-    volumes:
-      - vault_config:/vault/config
-      - vault_certs:/vault/certs
-      - vault_secrets:/vault/secrets
-    user: 100:1000
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
 
   kafka-client-vault-agent:
-    build:
-      context: ./vault
-      dockerfile: Dockerfile
+    <<: *vault-common
     container_name: kafka-client-cert-update
-    volumes:
-      - vault_config:/vault/config
-      - vault_certs:/vault/certs
-      - vault_secrets:/vault/secrets
-    user: 100:1000
-    command: agent -config=/vault/config/kafka-client-agent.hcl -log-level=info
     environment:
       VAULT_ADDR: http://vault:8200
       SKIP_SETCAP: "true"
+    command: agent -config=/vault/config/kafka-client-agent.hcl -log-level=info
 
 volumes:
   zookeeper_log:
