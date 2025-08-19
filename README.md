@@ -43,7 +43,7 @@ vault write kafka-int-ca/roles/kafka-broker \
   ext_key_usage="ServerAuth,ClientAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="localhost,client" \
+  allowed_domains="localhost,client,limited_client" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
@@ -199,11 +199,11 @@ openssl pkcs12 -export \
   -out /vault/certs/kafka-3.p12 \
   -passout pass:changeit
 
-# ---------- UI ----------
+# ---------- Client ----------
 
 vault write -format=json kafka-int-ca/issue/kafka-client \
   common_name="client" \
-  alt_names="client,localhost" \
+  alt_names="localhost" \
   ip_sans="127.0.0.1" \
   > /vault/certs/kafka-client.json
 
@@ -215,9 +215,29 @@ openssl pkcs12 -export \
   -inkey /vault/certs/kafka-client.key \
   -in /vault/certs/kafka-client.crt \
   -certfile /vault/certs/ca-chain.crt \
-  -name ui \
+  -name client \
   -passout pass:changeit \
   -out /vault/certs/kafka-client.p12
+
+# ---------- Limited client ----------
+
+vault write -format=json kafka-int-ca/issue/kafka-client \
+  common_name="limited-client" \
+  alt_names="localhost" \
+  ip_sans="127.0.0.1" \
+  > /vault/certs/kafka-client.json
+
+jq -r ".data.private_key"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.key
+jq -r ".data.certificate"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.crt
+chmod 600 /vault/certs/limited-kafka-client.key
+
+openssl pkcs12 -export \
+  -inkey /vault/certs/limited-kafka-client.key \
+  -in /vault/certs/limited-kafka-client.crt \
+  -certfile /vault/certs/ca-chain.crt \
+  -name limited-client \
+  -passout pass:changeit \
+  -out /vault/certs/limited-kafka-client.p12
 
 #####
 
