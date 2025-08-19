@@ -7,6 +7,7 @@ auto_auth {
     config = {
       role_id_file_path   = "/vault/secrets/kafka-broker-role_id"
       secret_id_file_path = "/vault/secrets/kafka-broker-secret_id"
+      remove_secret_id_file_after_reading = false
     }
   }
 }
