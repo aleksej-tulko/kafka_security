@@ -1,5 +1,5 @@
 exit_after_auth = false
-pid_file = "/tmp/vault-agent.pid"
+pid_file = "/tmp/vault-agent-kafka-client.pid"
 
 auto_auth {
   method "approle" {
@@ -12,6 +12,7 @@ auto_auth {
 }
 
 template {
-  source      = "/vault/config/kafka-client.tpl"
-  destination = "/vault/certs/kafka-client.json"
+  source      = "/vault/config/kafka-client-pkcs12.tpl"
+  destination = "/vault/certs/kafka-client.p12"
+  perms       = "0640"
 }
