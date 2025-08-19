@@ -165,6 +165,7 @@ services:
       - vault_config:/vault/config
       - vault_certs:/vault/certs
       - vault_secrets:/vault/secrets
+    user: 100:1000
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config /vault/config/config.hcl
@@ -178,6 +179,7 @@ services:
       - vault_config:/vault/config
       - vault_certs:/vault/certs
       - vault_secrets:/vault/secrets
+    user: 100:1000
     cap_add:
       - IPC_LOCK
     command: agent -config=/vault/config/agent.hcl -log-level=info

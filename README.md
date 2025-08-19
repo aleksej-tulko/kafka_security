@@ -219,12 +219,12 @@ openssl pkcs12 -export \
   -out /vault/certs/kafka-client.p12
 
 #####
-keytool -import -alias root-ca -trustcacerts \
+sudo keytool -import -alias root-ca -trustcacerts \
   -file root-ca.pem \
   -keystore kafka-truststore.jks \
   -storepass changeit -noprompt
 
-keytool -import -alias kafka-int-ca -trustcacerts \
+sudo keytool -import -alias kafka-int-ca -trustcacerts \
   -file kafka-int-ca.pem \
   -keystore kafka-truststore.jks \
   -storepass changeit -noprompt
