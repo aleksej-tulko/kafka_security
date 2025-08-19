@@ -171,8 +171,8 @@ services:
 
   vault-agent:
     build:
-      context: .
-      dockerfile: vault/Dockerfile
+      context: ./vault
+      dockerfile: Dockerfile
     container_name: vault-agent-kafka-client
     volumes:
       - vault_config:/vault/config
