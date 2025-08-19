@@ -2,6 +2,7 @@ sudo docker compose up vault -d
 sudo docker exec -it vault vault operator init -key-shares=1 -key-threshold=1 > init.txt
 cat init.txt
 sudo docker exec -it vault sh
+vault operator unseal
 export VAULT_TOKEN=hvs.Hc8WsAM8QGnE38qJTcYS7c4T
 
 #####
@@ -76,7 +77,7 @@ path "kafka-int-ca/issue/kafka-broker" {
 }
 EOF
 vault policy write kafka-broker kafka-broker.hcl
-vault write auth/token/roles/kafka-broker allowed_policies=kafka-server period=24h
+vault write auth/token/roles/kafka-broker allowed_policies=kafka-broker period=24h
 
 cat > zookeeper.hcl <<EOF
 path "kafka-int-ca/issue/zookeeper" {
@@ -84,7 +85,38 @@ path "kafka-int-ca/issue/zookeeper" {
 }
 EOF
 vault policy write zookeeper zookeeper.hcl
-vault write auth/token/roles/zookeeper allowed_policies=kafka-server period=24h
+vault write auth/token/roles/zookeeper allowed_policies=zookeeper period=24h
+
+#####
+
+vault auth enable approle || true
+
+# kafka-client
+vault write auth/approle/role/kafka-client \
+    secret_id_ttl=0 secret_id_num_uses=0 \
+    token_ttl=1h token_max_ttl=4h \
+    token_policies="kafka-client"
+
+vault read -field=role_id auth/approle/role/kafka-client/role-id > /vault/secrets/kafka-client-role_id
+vault write -field=secret_id -f auth/approle/role/kafka-client/secret-id > /vault/secrets/kafka-client-secret_id
+
+# kafka-broker
+vault write auth/approle/role/kafka-broker \
+    secret_id_ttl=0 secret_id_num_uses=0 \
+    token_ttl=1h token_max_ttl=4h \
+    token_policies="kafka-broker"
+
+vault read -field=role_id auth/approle/role/kafka-broker/role-id > /vault/secrets/kafka-broker-role_id
+vault write -field=secret_id -f auth/approle/role/kafka-broker/secret-id > /vault/secrets/kafka-broker-secret_id
+
+# zookeeper
+vault write auth/approle/role/zookeeper \
+    secret_id_ttl=0 secret_id_num_uses=0 \
+    token_ttl=1h token_max_ttl=4h \
+    token_policies="zookeeper"
+
+vault read -field=role_id auth/approle/role/zookeeper/role-id > /vault/secrets/zookeeper-role_id
+vault write -field=secret_id -f auth/approle/role/zookeeper/secret-id > /vault/secrets/zookeeper-secret_id
 
 #####
 apk add --no-cache openssl jq >/dev/null
@@ -200,5 +232,5 @@ keytool -import -alias kafka-int-ca -trustcacerts \
 
 
 echo 'changeit' > vault/certs/kafka_creds
-sudo chmod 1000:1000 vault/certs/ -R
+sudo chown 1000:1000 vault/certs/ -R
 
