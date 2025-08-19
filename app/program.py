@@ -80,7 +80,7 @@ def delivery_report(err, msg) -> None:
     if err is not None:
         logger.error(msg=LoggerMsg.MSG_NOT_DELIVERED.format(err=err))
     else:
-        logger.info(msg=LoggerMsg.MSG_DELIVERED.format(topic=msg.topic))
+        logger.info(msg=LoggerMsg.MSG_DELIVERED.format(topic=msg.topic()))
 
 
 def create_message(producer: Producer) -> None:
