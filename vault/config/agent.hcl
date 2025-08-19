@@ -12,7 +12,7 @@ auto_auth {
 }
 
 template {
-  source      = "/vault/config/kafka-client-pkcs12.tpl"
+  source      = "/vault/config/kafka-client.tpl"
   destination = "/vault/certs/kafka-client.p12"
   perms       = "0640"
 }
