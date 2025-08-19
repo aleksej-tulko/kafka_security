@@ -21,7 +21,7 @@ services:
       ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
       ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/secrets/zookeeper.p12
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/zookeeper/kafka-truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/secrets/kafka-truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
       ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit

@@ -63,9 +63,10 @@ vault write kafka-int-ca/roles/zookeeper \
   ext_key_usage="ServerAuth"
 
 #####
+cd /vault
 cat > kafka-client.hcl <<EOF
 path "kafka-int-ca/issue/kafka-client" {
-  capabilities = ["create", "update", "read"]
+  capabilities = ["update"]
 }
 EOF
 vault policy write kafka-client kafka-client.hcl
@@ -73,7 +74,7 @@ vault write auth/token/roles/kafka-client allowed_policies=kafka-client period=2
 
 cat > kafka-broker.hcl <<EOF
 path "kafka-int-ca/issue/kafka-broker" {
-  capabilities = ["create", "update", "read"]
+  capabilities = ["update"]
 }
 EOF
 vault policy write kafka-broker kafka-broker.hcl
@@ -81,7 +82,7 @@ vault write auth/token/roles/kafka-broker allowed_policies=kafka-broker period=2
 
 cat > zookeeper.hcl <<EOF
 path "kafka-int-ca/issue/zookeeper" {
-  capabilities = ["create", "update", "read"]
+  capabilities = ["update"]
 }
 EOF
 vault policy write zookeeper zookeeper.hcl
@@ -231,6 +232,6 @@ sudo keytool -import -alias kafka-int-ca -trustcacerts \
 
 
 
-echo 'changeit' > vault/certs/kafka_creds
+echo 'changeit' > kafka_creds
 sudo chown 1000:1000 vault/certs/ -R
 
