@@ -152,7 +152,9 @@ services:
       - confluent
 
   vault:
-    image: hashicorp/vault
+    build:
+      context: .
+      dockerfile: vault/Dockerfile
     container_name: vault
     environment:
       VAULT_ADDR: "http://127.0.0.1:8200"
@@ -168,7 +170,9 @@ services:
     entrypoint: vault server -config /vault/config/config.hcl
 
   vault-agent:
-    image: hashicorp/vault
+    build:
+      context: .
+      dockerfile: vault/Dockerfile
     container_name: vault-agent-kafka-client
     volumes:
       - ./vault/config:/vault/config
