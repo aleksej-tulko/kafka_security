@@ -26,7 +26,11 @@ services:
       ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit
       ZOOKEEPER_SSL_CLIENT_AUTH: need
-      
+      KAFKA_OPTS: >-
+        -Djava.security.auth.login.config=/etc/zookeeper/secrets/zookeeper.sasl.jaas.conf
+        -Dzookeeper.authProvider.sasl=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dzookeeper.allowSaslFailedClients=false
+        -Dzookeeper.requireClientAuthScheme=sasl
     networks:
       - confluent
 
