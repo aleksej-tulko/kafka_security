@@ -177,7 +177,7 @@ services:
     user: 1000:1000
     cap_add:
       - IPC_LOCK
-    command: agent -config=/vault/config/agent.hcl -log-level=info
+    command: agent -config=/vault/config/agent.hcl -log-level=info -disable-caps
     environment:
       VAULT_ADDR: http://vault:8200
 
