@@ -174,12 +174,9 @@ services:
     volumes:
       - ./vault/config:/vault/config
       - ./vault/certs:/vault/certs
-    user: 1000:1000
     cap_add:
       - IPC_LOCK
-    cap_drop:
-      - ALL
-    command: agent -config=/vault/config/agent.hcl -log-level=info -disable-caps
+    command: agent -config=/vault/config/agent.hcl -log-level=info
     environment:
       VAULT_ADDR: http://vault:8200
 
