@@ -123,6 +123,8 @@ def consume_infinite_loop(consumer: Consumer) -> None:
             value = msg.value().decode('utf-8')
             consumer.commit(asynchronous=False)
 
+            print(value)
+
             logger.debug(msg=LoggerMsg.MSG_RECEIVED.format(
                 key=msg.key().decode('utf-8'), value=value,
                 offset=msg.offset(), size=len(msg.value())
