@@ -53,7 +53,7 @@ consumer_conf = conf | {
     'fetch.min.bytes': FETCH_MIN_BYTES,
     'fetch.wait.max.ms': FETCH_WAIT_MAX_MS,
     'sasl.username': 'consumer',
-    'sasl.password': 'consumer_password',
+    'sasl.password': 'consumer_passwords',
 }
 
 producer = Producer(producer_conf)
