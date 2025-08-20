@@ -41,8 +41,8 @@ producer_conf = conf | {
     'retries': RETRIES,
     'linger.ms': LINGER_MS,
     'compression.type': COMPRESSION_TYPE,
-    'sasl.username': 'producer',
-    'sasl.password': 'producer_password',
+    'sasl.username': 'kafka_server_admin',
+    'sasl.password': 'kafka_server_password',
 }
 
 consumer_conf = conf | {
@@ -52,8 +52,8 @@ consumer_conf = conf | {
     'group.id': GROUP_ID,
     'fetch.min.bytes': FETCH_MIN_BYTES,
     'fetch.wait.max.ms': FETCH_WAIT_MAX_MS,
-    'sasl.username': 'consumer',
-    'sasl.password': 'consumer_password',
+    'sasl.username': 'kafka_server_admin',
+    'sasl.password': 'kafka_server_password',
 }
 
 producer = Producer(producer_conf)
