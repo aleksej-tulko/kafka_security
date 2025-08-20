@@ -85,7 +85,7 @@ services:
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_SUPER_USERS: User:admin
+      KAFKA_SUPER_USERS: User:kafka_server_admin ### Взять из kafka_server_jaas.conf
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,EXTERNAL:SASL_SSL
     networks:
