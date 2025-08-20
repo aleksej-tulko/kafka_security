@@ -29,10 +29,13 @@ CERTS_FOLDER = '/opt/certs'
 conf = {
     'bootstrap.servers':
     'kafka-1:9093,kafka-2:9093,kafka-3:9093',
-    'security.protocol': 'SSL',
+    'security.protocol': 'SASL_SSL',
     'ssl.ca.location': f'{CERTS_FOLDER}/root-ca.pem',
     'ssl.certificate.location': f'{CERTS_FOLDER}/kafka-client.crt',
     'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
+    "sasl.mechanism": "PLAIN",
+    "sasl.username": "admin",
+    "sasl.password": "password",
 }
 
 producer_conf = conf | {
