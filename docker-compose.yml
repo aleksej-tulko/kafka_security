@@ -9,8 +9,7 @@ services:
     volumes:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
-      - /opt/certs:/etc/zookeeper/certs:ro
-      - /opt/shared:/etc/zookeeper/secrets:ro
+      - /opt/secrets:/etc/zookeeper/certs:ro
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
@@ -114,12 +113,10 @@ services:
       - 9094:9094
     volumes:
       - kafka_1:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/certs
-      - /opt/shared:/etc/kafka/secrets
+      - /opt/secrets:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
-      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/certs
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-1:9093,EXTERNAL://localhost:9094
@@ -135,8 +132,7 @@ services:
       - 9096:9094
     volumes:
       - kafka_2:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/certs
-      - /opt/shared:/etc/kafka/secrets
+      - /opt/secrets:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
@@ -155,15 +151,14 @@ services:
       - 9098:9094
     volumes:
       - kafka_3:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/certs
-      - /opt/shared:/etc/kafka/secrets
+      - /opt/secrets:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 3
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-3.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-3:9093,EXTERNAL://localhost:9098
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/certs/kafka-3.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-3.p12
     hostname: kafka-3
 
   ui:
@@ -171,7 +166,7 @@ services:
     restart: always
     container_name: ui
     volumes:
-      - /opt/certs/:/etc/ui/certs
+      - /opt/secrets/:/etc/ui/certs
     user: 1000:1000
     ports:
       - 8080:8080
@@ -227,7 +222,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /opt/certs/:/opt/certs
+      - /opt/secrets/:/opt/certs
     networks:
       - confluent
     restart: always
