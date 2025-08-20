@@ -72,7 +72,6 @@ services:
 
       ### SSL
 
-      KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
       
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
