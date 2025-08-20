@@ -275,3 +275,8 @@ sudo chown 1000:1000 kafka-client.p12
 sudo mv kafka-client.p12 /opt/certs/
 sudo docker compose restart ui
 sudo docker compose logs ui
+
+
+sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation describe   --cluster kafka --command-config /etc/kafka/secrets/adminclient-configs.conf
+sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation read   --topic '*' --command-config /etc/kafka/secrets/adminclient-configs.conf
+sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation read   --group '*' --command-config /etc/kafka/secrets/adminclient-configs.conf

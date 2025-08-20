@@ -33,16 +33,16 @@ conf = {
     'ssl.ca.location': f'{CERTS_FOLDER}/root-ca.pem',
     'ssl.certificate.location': f'{CERTS_FOLDER}/kafka-client.crt',
     'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
-    "sasl.mechanism": "PLAIN",
-    "sasl.username": "admin",
-    "sasl.password": "passwod",
+    'sasl.mechanism': 'PLAIN',
 }
 
 producer_conf = conf | {
     'acks': ACKS_LEVEL,
     'retries': RETRIES,
     'linger.ms': LINGER_MS,
-    'compression.type': COMPRESSION_TYPE
+    'compression.type': COMPRESSION_TYPE,
+    'sasl.username': 'producer',
+    'sasl.password': 'producer_password',
 }
 
 consumer_conf = conf | {
@@ -51,7 +51,9 @@ consumer_conf = conf | {
     'session.timeout.ms': SESSION_TIME_MS,
     'group.id': GROUP_ID,
     'fetch.min.bytes': FETCH_MIN_BYTES,
-    'fetch.wait.max.ms': FETCH_WAIT_MAX_MS
+    'fetch.wait.max.ms': FETCH_WAIT_MAX_MS,
+    'sasl.username': 'consumer',
+    'sasl.password': 'consumer_password',
 }
 
 producer = Producer(producer_conf)
