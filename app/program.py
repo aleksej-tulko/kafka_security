@@ -21,7 +21,7 @@ FETCH_WAIT_MAX_MS = os.getenv('FETCH_WAIT_MAX_MS', 100)
 RETRIES = os.getenv('RETRIES', '3')
 SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
-TOPIC = os.getenv('TOPIC', 'ssl-topic')
+TOPIC = os.getenv('TOPIC', 'topic-1')
 COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
 GROUP_ID = os.getenv('GROUP_ID', 'ssl')
 CERTS_FOLDER = '/opt/secrets'
@@ -90,12 +90,13 @@ def delivery_report(err, msg) -> None:
 
 def create_message(producer: Producer) -> None:
     """Сериализация сообщения и отправка в брокер."""
-    producer.produce(
-        topic=TOPIC,
-        key='SSL Message',
-        value=f'val-{uuid.uuid4()}'.encode('utf-8'),
-        on_delivery=delivery_report
-    )
+    for topic in [TOPIC, 'topic-2']:
+        producer.produce(
+            topic=topic,
+            key='SSL Message',
+            value=f'val-{uuid.uuid4()}'.encode('utf-8'),
+            on_delivery=delivery_report
+        )
 
 
 def producer_infinite_loop(producer: Producer):

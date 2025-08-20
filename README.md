@@ -43,7 +43,7 @@ vault write kafka-int-ca/roles/kafka-broker \
   ext_key_usage="ServerAuth,ClientAuth"
 
 vault write kafka-int-ca/roles/kafka-client \
-  allowed_domains="localhost,client,limited_client" \
+  allowed_domains="localhost,client" \
   allow_subdomains=true allow_bare_domains=true \
   allow_ip_sans=true allow_localhost=true \
   enforce_hostnames=false \
@@ -90,7 +90,7 @@ vault write auth/token/roles/zookeeper allowed_policies=zookeeper period=24h
 
 #####
 
-vault auth enable approle || true
+vault auth enable approle
 
 # kafka-client
 vault write auth/approle/role/kafka-client \
@@ -120,7 +120,6 @@ vault read -field=role_id auth/approle/role/zookeeper/role-id > /vault/secrets/z
 vault write -field=secret_id -f auth/approle/role/zookeeper/secret-id > /vault/secrets/zookeeper-secret_id
 
 #####
-apk add --no-cache openssl jq >/dev/null
 
 # ---------- ZOOKEEPER ----------
 vault write -format=json kafka-int-ca/issue/zookeeper \
@@ -219,31 +218,11 @@ openssl pkcs12 -export \
   -passout pass:changeit \
   -out /vault/certs/kafka-client.p12
 
-# ---------- Limited client ----------
-
-vault write -format=json kafka-int-ca/issue/kafka-client \
-  common_name="limited-client" \
-  alt_names="localhost" \
-  ip_sans="127.0.0.1" \
-  > /vault/certs/limited-kafka-client.json
-
-jq -r ".data.private_key"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.key
-jq -r ".data.certificate"   /vault/certs/limited-kafka-client.json > /vault/certs/limited-kafka-client.crt
-chmod 600 /vault/certs/limited-kafka-client.key
-
-openssl pkcs12 -export \
-  -inkey /vault/certs/limited-kafka-client.key \
-  -in /vault/certs/limited-kafka-client.crt \
-  -certfile /vault/certs/ca-chain.crt \
-  -name limited-client \
-  -passout pass:changeit \
-  -out /vault/certs/limited-kafka-client.p12
-
 #####
 
-sudo docker cp vault:/vault/certs/. /opt/certs/
+sudo docker cp vault:/vault/certs/. /opt/secrets/
 
-cd /opt/certs
+cd /opt/secrets
 
 sudo keytool -import -alias root-ca -trustcacerts \
   -file root-ca.pem \
@@ -258,9 +237,26 @@ sudo keytool -import -alias kafka-int-ca -trustcacerts \
 
 
 sudo vim kafka_creds
-sudo chown 1000:1000 /opt/certs/ -R
+sudo cp /home/aleksej.tulko/kafka_security/app/adminclient-configs.conf ./
+sudo cp /home/aleksej.tulko/kafka_security/app/kafka_server_jaas.conf ./
+sudo cp /home/aleksej.tulko/kafka_security/app/zookeeper.sasl.jaas.conf ./
+sudo chown 1000:1000 /opt/secrets/ -R
 
 cd /home/aleksej.tulko/kafka_security
+
+
+ACKS_LEVEL='all'
+AUTOOFF_RESET='earliest'
+ENABLE_AUTOCOMMIT=False
+FETCH_MIN_BYTES=400
+FETCH_WAIT_MAX_MS=100
+RETRIES=3
+SESSION_TIME_MS=6000
+TOPIC_1='topic-1'
+TOPIC_2='topic-2'
+COMPRESSION_TYPE='lz4'
+GROUP_ID='ssl'
+
 sudo docker compose up zookeeper -d
 sudo docker compose logs zookeeper
 openssl s_client -connect localhost:2281 -servername zookeeper -showcerts </dev/null
@@ -273,6 +269,8 @@ sudo openssl pkcs12 -in kafka-client.p12 -clcerts -nokeys -nodes > check_cert
 cat check_cert | openssl x509 -noout -dates -subject -issuer
 sudo chown 1000:1000 kafka-client.p12
 sudo mv kafka-client.p12 /opt/certs/
+
+sudo docker compose up ui -d
 sudo docker compose restart ui
 sudo docker compose logs ui
 
@@ -280,3 +278,67 @@ sudo docker compose logs ui
 sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation describe   --cluster kafka --command-config /etc/kafka/secrets/adminclient-configs.conf
 sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation read   --topic '*' --command-config /etc/kafka/secrets/adminclient-configs.conf
 sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:ui   --operation read   --group '*' --command-config /etc/kafka/secrets/adminclient-configs.conf
+sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:consumer   --operation read   --group ssl --command-config /etc/kafka/secrets/adminclient-configs.conf
+sudo docker compose exec -it kafka-1 kafka-acls --bootstrap-server kafka-1:9093   --add --allow-principal User:consumer   --operation describe   --group ssl --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:producer \
+  --operation Write --topic topic-1 \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:producer \
+  --operation Write --topic topic-2 \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:consumer \
+  --operation Read --topic topic-1 \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:consumer \
+  --operation Read --group ssl \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:consumer \
+  --operation Describe --group ssl \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+# доступ к метаданным топиков
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:ui \
+  --operation Read --topic '*' \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+# доступ к метаданным групп
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:ui \
+  --operation Describe --group '*' \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+# доступ к кластеру (describe + describe-configs)
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:ui \
+  --operation Describe --cluster \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-acls \
+  --bootstrap-server kafka-1:9093 \
+  --add --allow-principal User:ui \
+  --operation DescribeConfigs --cluster \
+  --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+
+sudo docker compose exec -it kafka-1 kafka-topics   --create   --topic topic-1   --partitions 1   --replication-factor 2   --bootstrap-server kafka-1:9093   --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+sudo docker compose exec -it kafka-1 kafka-topics   --create   --topic topic-2   --partitions 1   --replication-factor 2   --bootstrap-server kafka-1:9093   --command-config /etc/kafka/secrets/adminclient-configs.conf
