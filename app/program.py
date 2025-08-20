@@ -123,8 +123,6 @@ def consume_infinite_loop(consumer: Consumer) -> None:
             value = msg.value().decode('utf-8')
             consumer.commit(asynchronous=False)
 
-            print(value)
-
             logger.debug(msg=LoggerMsg.MSG_RECEIVED.format(
                 key=msg.key().decode('utf-8'), value=value,
                 offset=msg.offset(), size=len(msg.value())
@@ -137,17 +135,17 @@ def consume_infinite_loop(consumer: Consumer) -> None:
 
 
 if __name__ == "__main__":
-    producer_thread = Thread(
-        target=producer_infinite_loop,
-        args=(producer,),
-        daemon=True
-    )
+    # producer_thread = Thread(
+    #     target=producer_infinite_loop,
+    #     args=(producer,),
+    #     daemon=True
+    # )
     consumer_thread = Thread(
         target=consume_infinite_loop,
         args=(consumer,),
         daemon=True
     )
-    producer_thread.start()
+    # producer_thread.start()
     consumer_thread.start()
     while True:
         logger.debug(msg=LoggerMsg.PROGRAM_RUNNING)
