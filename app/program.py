@@ -117,6 +117,8 @@ def consume_infinite_loop(consumer: Consumer) -> None:
         while True:
             msg = consumer.poll(0.1)
 
+            print(msg)
+
             if msg is None or msg.error():
                 continue
 
