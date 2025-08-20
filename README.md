@@ -77,6 +77,7 @@ cd kafka_security
 ```bash
 sudo docker compose up vault -d
 sudo docker exec -it vault vault operator init -key-shares=1 -key-threshold=1 > init.txt
+cat init.txt
 sudo docker exec -it vault sh
 vault operator unseal # Запросит ввести Unseal Key 1 из файла init.txt
 export VAULT_TOKEN=XXXX # Подставить Initial Root Token из файла init.txt
@@ -87,7 +88,7 @@ export VAULT_TOKEN=XXXX # Подставить Initial Root Token из файл�
 3. Настроить Vault для создания корневого сертификата:
 
 ```bash
-vault secrets enable -path=root-ca pki || true
+vault secrets enable -path=root-ca pki
 vault secrets tune -max-lease-ttl=87600h root-ca
 vault write -field=certificate root-ca/root/generate/internal \
   common_name="Acme Root CA" ttl=87600h > /vault/certs/root-ca.pem
@@ -99,7 +100,7 @@ vault write root-ca/config/urls \
 4. Настроить Vault для создания промежуточного сертификата:
 
 ```bash
-vault secrets enable -path=kafka-int-ca pki || true
+vault secrets enable -path=kafka-int-ca pki
 vault secrets tune -max-lease-ttl=43800h kafka-int-ca
 
 vault write -field=csr kafka-int-ca/intermediate/generate/internal \
