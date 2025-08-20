@@ -21,7 +21,7 @@ FETCH_WAIT_MAX_MS = os.getenv('FETCH_WAIT_MAX_MS', 100)
 RETRIES = os.getenv('RETRIES', '3')
 SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
-TOPIC = os.getenv('TOPIC', 'topic-1')
+TOPICS = os.getenv('TOPIC', 'topic-1')
 COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
 GROUP_ID = os.getenv('GROUP_ID', 'ssl')
 CERTS_FOLDER = '/opt/secrets'
@@ -75,7 +75,8 @@ class LoggerMsg:
     MSG_DELIVERED = 'Сообщение доставлено в топик {topic}.'
     MSG_RECEIVED = ('Получено сообщение. Ключ - {key}, '
                     'значение - {value}, офсет - {offset}. '
-                    'Размер сообщения - {size} байтов.'
+                    'Размер сообщения - {size} байтов. '
+                    'Прочитано из топиков {topics}'
                     )
     PROGRAM_RUNNING = 'Выполняется программа.'
 
@@ -90,7 +91,7 @@ def delivery_report(err, msg) -> None:
 
 def create_message(producer: Producer) -> None:
     """Сериализация сообщения и отправка в брокер."""
-    for topic in [TOPIC, 'topic-2']:
+    for topic in TOPICS.split(','):
         producer.produce(
             topic=topic,
             key='SSL Message',
@@ -113,7 +114,7 @@ def producer_infinite_loop(producer: Producer):
 
 def consume_infinite_loop(consumer: Consumer) -> None:
     """Получение сообщений из брокера по одному."""
-    consumer.subscribe([TOPIC])
+    consumer.subscribe(TOPICS.split(','))
     try:
         while True:
             msg = consumer.poll(0.1)
@@ -126,7 +127,8 @@ def consume_infinite_loop(consumer: Consumer) -> None:
 
             logger.debug(msg=LoggerMsg.MSG_RECEIVED.format(
                 key=msg.key().decode('utf-8'), value=value,
-                offset=msg.offset(), size=len(msg.value())
+                offset=msg.offset(), size=len(msg.value()),
+                topics=msg.topic()
             ))
 
     except KafkaException as KE:
