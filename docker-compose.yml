@@ -120,7 +120,7 @@ services:
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-1:9093,EXTERNAL://localhost:9094
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/certs/kafka-1.p12
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka-1.p12
     hostname: kafka-1
 
   kafka-2:
