@@ -10,7 +10,7 @@ services:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
       - /opt/certs:/etc/zookeeper/certs:ro
-      - /opt/shared:/etc/zookeepers/secrets
+      - /opt/shared:/etc/zookeepers/secrets:ro
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
