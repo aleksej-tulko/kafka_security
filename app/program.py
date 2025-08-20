@@ -29,7 +29,7 @@ CERTS_FOLDER = '/opt/secrets'
 conf = {
     'bootstrap.servers':
     'kafka-1:9093,kafka-2:9093,kafka-3:9093',
-    'security.protocol': 'SASL_PLAINTEXT',
+    'security.protocol': 'SSL',
     'ssl.ca.location': f'{CERTS_FOLDER}/root-ca.pem',
     'ssl.certificate.location': f'{CERTS_FOLDER}/kafka-client.crt',
     'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
