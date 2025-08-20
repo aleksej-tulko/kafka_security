@@ -153,7 +153,8 @@ vault write kafka-int-ca/roles/zookeeper \
 6. Создание политик для обновления конечных сертификатов:
 
 ```bash
-cd /vault
+cd /vault # Это важно, чтобы не было проблем с правами в следующих шагах
+
 cat > kafka-client.hcl <<EOF
 path "kafka-int-ca/issue/kafka-client" {
   capabilities = ["update"]
@@ -352,11 +353,11 @@ sudo vim /opt/secrets/kafka_creds
 16. Скопировать файлы конфигурации в папку с секретами:
 
 ```bash
-sudo cp ~/kafka_security/app/adminclient-configs.conf /opt/secrets/
+sudo cp ~/kafka_security/adminclient-configs.conf /opt/secrets/
 
-sudo cp ~/kafka_security/app/kafka_server_jaas.conf /opt/secrets/
+sudo cp ~/kafka_security/kafka_server_jaas.conf /opt/secrets/
 
-sudo cp ~/kafka_security/app/zookeeper.sasl.jaas.conf /opt/secrets/
+sudo cp ~/kafka_security/zookeeper.sasl.jaas.conf /opt/secrets/
 ```
 
 17. Выставить права на всю директорию с секретами:
@@ -371,17 +372,16 @@ sudo chown 1000:1000 /opt/secrets/ -R
 cd ~/kafka_security
 
 cat > .env <<'EOF'
-ACKS_LEVEL=all
-AUTOOFF_RESET=earliest
+ACKS_LEVEL='all'
+AUTOOFF_RESET='earliest'
 ENABLE_AUTOCOMMIT=False
 FETCH_MIN_BYTES=400
 FETCH_WAIT_MAX_MS=100
 RETRIES=3
 SESSION_TIME_MS=6000
-TOPIC_1=topic-1
-TOPIC_2=topic-2
-COMPRESSION_TYPE=lz4
-GROUP_ID=ssl
+TOPICS='topic-1,topic-2'
+COMPRESSION_TYPE='lz4'
+GROUP_ID='ssl'
 EOF
 ```
 
@@ -488,17 +488,17 @@ sudo docker compose up app
 ```bash
 sudo docker compose down ui # Остановка Kafka UI, который отправляет клиентский сертификат брокерам
 
-sudo docker compose up kafka-client-vault-agent # Агент выполнит скрипт, который пересоздаст сертификат. По завершении можно просто удалить это сервис
+sudo docker compose up kafka-client-vault-agent # Агент выполнит скрипт, который пересоздаст сертификат. Надо дождаться вывода сообщения 'Updated kafka-client.p12'.По завершении можно просто удалить это сервис
 
 sudo docker cp vault:/vault/certs/kafka-client.p12 ./ # Извлечь обновленный серт на хост
 
-sudo openssl pkcs12 -in kafka-client.p12 -clcerts -nokeys -nodes > check_cert && cat check_cert | openssl x509 -noout -dates -subject -issuer # Проверка, что срок действия сертификата изменился
+sudo openssl pkcs12 -in kafka-client.p12 -clcerts -nokeys -nodes > check_cert && cat check_cert | openssl x509 -noout -dates -subject -issuer # Проверка, что срок действия сертификата изменился. Запроси пароль, который 'changeit'
 
 sudo chown 1000:1000 kafka-client.p12
 
 sudo mv kafka-client.p12 /opt/secrets/
 
-sudo docker compose restart ui # Kafka UI уже запустится с новым сертфиикатом
+sudo docker compose up ui -d # Kafka UI уже запустится и подключится к брокерам с новым сертфиикатом
 ```
 
 ## Автор
