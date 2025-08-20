@@ -53,7 +53,7 @@ consumer_conf = conf | {
     'fetch.min.bytes': FETCH_MIN_BYTES,
     'fetch.wait.max.ms': FETCH_WAIT_MAX_MS,
     'sasl.username': 'consumer',
-    'sasl.password': 'consumer_passwords',
+    'sasl.password': 'consumer_password',
 }
 
 producer = Producer(producer_conf)
@@ -117,8 +117,6 @@ def consume_infinite_loop(consumer: Consumer) -> None:
         while True:
             msg = consumer.poll(0.1)
 
-            print(msg)
-
             if msg is None or msg.error():
                 continue
 
@@ -137,17 +135,17 @@ def consume_infinite_loop(consumer: Consumer) -> None:
 
 
 if __name__ == "__main__":
-    # producer_thread = Thread(
-    #     target=producer_infinite_loop,
-    #     args=(producer,),
-    #     daemon=True
-    # )
+    producer_thread = Thread(
+        target=producer_infinite_loop,
+        args=(producer,),
+        daemon=True
+    )
     consumer_thread = Thread(
         target=consume_infinite_loop,
         args=(consumer,),
         daemon=True
     )
-    # producer_thread.start()
+    producer_thread.start()
     consumer_thread.start()
     while True:
         logger.debug(msg=LoggerMsg.PROGRAM_RUNNING)
