@@ -24,12 +24,12 @@ LINGER_MS = os.getenv('LINGER_MS', 0)
 TOPIC = os.getenv('TOPIC', 'ssl-topic')
 COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
 GROUP_ID = os.getenv('GROUP_ID', 'ssl')
-CERTS_FOLDER = '/opt/certs'
+CERTS_FOLDER = '/opt/secrets'
 
 conf = {
     'bootstrap.servers':
     'kafka-1:9093,kafka-2:9093,kafka-3:9093',
-    'security.protocol': 'SASL_SSL',
+    'security.protocol': 'SASL_PLAINTEXT',
     'ssl.ca.location': f'{CERTS_FOLDER}/root-ca.pem',
     'ssl.certificate.location': f'{CERTS_FOLDER}/kafka-client.crt',
     'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
@@ -41,8 +41,8 @@ producer_conf = conf | {
     'retries': RETRIES,
     'linger.ms': LINGER_MS,
     'compression.type': COMPRESSION_TYPE,
-    'sasl.username': 'kafka_server_admin',
-    'sasl.password': 'kafka_server_password',
+    'sasl.username': 'producer',
+    'sasl.password': 'producer_password',
 }
 
 consumer_conf = conf | {
@@ -52,8 +52,8 @@ consumer_conf = conf | {
     'group.id': GROUP_ID,
     'fetch.min.bytes': FETCH_MIN_BYTES,
     'fetch.wait.max.ms': FETCH_WAIT_MAX_MS,
-    'sasl.username': 'kafka_server_admin',
-    'sasl.password': 'kafka_server_password',
+    'sasl.username': 'consumer',
+    'sasl.password': 'consumer_password',
 }
 
 producer = Producer(producer_conf)

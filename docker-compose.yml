@@ -230,7 +230,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /opt/secrets/:/opt/certs
+      - /opt/secrets/:/opt/secrets
     networks:
       - confluent
     restart: always
