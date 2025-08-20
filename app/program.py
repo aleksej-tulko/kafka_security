@@ -21,7 +21,7 @@ FETCH_WAIT_MAX_MS = os.getenv('FETCH_WAIT_MAX_MS', 100)
 RETRIES = os.getenv('RETRIES', '3')
 SESSION_TIME_MS = os.getenv('SESSION_TIME_MS', 1_000)
 LINGER_MS = os.getenv('LINGER_MS', 0)
-TOPICS = os.getenv('TOPIC', 'topic-1')
+TOPICS = os.getenv('TOPICS', 'topic-1')
 COMPRESSION_TYPE = os.getenv('COMPRESSION_TYPE', 'lz4')
 GROUP_ID = os.getenv('GROUP_ID', 'ssl')
 CERTS_FOLDER = '/opt/secrets'
@@ -76,7 +76,7 @@ class LoggerMsg:
     MSG_RECEIVED = ('Получено сообщение. Ключ - {key}, '
                     'значение - {value}, офсет - {offset}. '
                     'Размер сообщения - {size} байтов. '
-                    'Прочитано из топиков {topics}'
+                    'Прочитано из топиков {topics}.'
                     )
     PROGRAM_RUNNING = 'Выполняется программа.'
 
