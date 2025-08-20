@@ -9,7 +9,7 @@ services:
     volumes:
       - zookeeper_log:/var/lib/zookeeper/log
       - zookeeper_data:/var/lib/zookeeper/data
-      - /opt/secrets:/etc/zookeeper/certs:ro
+      - /opt/secrets:/etc/zookeeper/secrets:ro
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
@@ -22,8 +22,8 @@ services:
       ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
 
       ### Truststore and keystore locations
-      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/certs/zookeeper.p12
-      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/certs/kafka-truststore.jks
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/secrets/zookeeper.p12
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/secrets/kafka-truststore.jks
 
       ### Passwords
       ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
