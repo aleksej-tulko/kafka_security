@@ -197,7 +197,7 @@ services:
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_KERBEROS_SERVICE_NAME: kafka
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: >
         org.apache.kafka.common.security.plain.PlainLoginModule required
-        username="kafka_server_admin" password="kafka_server_password";
+        username="ui" password="ui_password";
     networks:
       - confluent
 
