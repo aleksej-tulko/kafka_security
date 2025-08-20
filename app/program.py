@@ -35,7 +35,7 @@ conf = {
     'ssl.key.location': f'{CERTS_FOLDER}/kafka-client.key',
     "sasl.mechanism": "PLAIN",
     "sasl.username": "admin",
-    "sasl.password": "password",
+    "sasl.password": "passwod",
 }
 
 producer_conf = conf | {
