@@ -125,7 +125,7 @@ services:
       - 9096:9094
     volumes:
       - kafka_2:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/secrets
+      - /opt/certs:/etc/kafka/certs
       - /opt/shared:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
@@ -145,7 +145,7 @@ services:
       - 9098:9094
     volumes:
       - kafka_3:/var/lib/kafka/data
-      - /opt/certs:/etc/kafka/secrets
+      - /opt/certs:/etc/kafka/certs
       - /opt/shared:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
