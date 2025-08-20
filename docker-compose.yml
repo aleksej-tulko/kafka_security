@@ -17,16 +17,24 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SECURE_CLIENT_PORT: 2281
+      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+
       ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
       ZOOKEEPER_SSL_KEYSTORE_ALIAS: zookeeper
-      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+
+      ### Truststore and keystore locations
       ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zookeeper/certs/zookeeper.p12
-      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
       ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zookeeper/certs/kafka-truststore.jks
-      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
-      ZOOKEEPER_SSL_CLIENT_ENABLE: true
+
+      ### Passwords
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: changeit
       ZOOKEEPER_SSL_KEY_PASSWORD: changeit
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: changeit
+
+      ### Auth for clients
+      ZOOKEEPER_SSL_CLIENT_ENABLE: true
       ZOOKEEPER_SSL_CLIENT_AUTH: need
+
       KAFKA_OPTS: >-
         -Djava.security.auth.login.config=/etc/zookeeper/secrets/zookeeper.sasl.jaas.conf
         -Dzookeeper.authProvider.sasl=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -66,6 +74,7 @@ services:
 
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka-truststore.jks
 
+      ### Files with passwords
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka_creds
       KAFKA_SSL_KEY_CREDENTIALS: kafka_creds
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka_creds
@@ -110,6 +119,7 @@ services:
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/certs
       KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.p12
       KAFKA_LISTENERS: SASL_SSL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka-1:9093,EXTERNAL://localhost:9094
